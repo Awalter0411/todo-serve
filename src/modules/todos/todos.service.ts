@@ -6,25 +6,39 @@ import { EditTodoDto } from './dto/edit-todo.dto';
 import { Todo } from './entity/todo.entity';
 import { isNumber } from '../../utils/validate.util';
 import { StatusDto } from './dto/status.dto';
-import { IdDto } from 'src/common/dto/id.dto';
+import { Category } from '../categories/entity/category.entity';
 
 @Injectable()
 export class TodoService {
   constructor(
     @InjectRepository(Todo) private readonly todoRepository: Repository<Todo>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   // 创建一个todo
   async createTodo(createTodoDto: CreateTodoDto) {
     const todo = new Todo();
+    const hasCategory = await this.categoryRepository.findOne({
+      where: {
+        id: createTodoDto.categoryId,
+        isDelete: false,
+      },
+    });
+    if (!hasCategory) {
+      throw new HttpException('分类不存在', 404);
+    }
     todo.content = createTodoDto.content;
     todo.status = createTodoDto.status;
+    todo.category = createTodoDto.categoryId;
     const result = await this.todoRepository.save(todo);
+
     const { id, content, status, createTime, updateTime } = result;
     return {
       id,
       content,
       status,
+      category: hasCategory,
       createTime,
       updateTime,
     };
@@ -36,7 +50,7 @@ export class TodoService {
     const todo = await this.todoRepository.findOne({
       where: {
         id: id,
-        isDelete: false
+        isDelete: false,
       },
     });
     if (!todo) {
@@ -46,24 +60,34 @@ export class TodoService {
       if (key !== 'id') todo[key] = editTodoDto[key];
     }
     const result = await this.todoRepository.save(todo);
+    const category = await this.categoryRepository.findOne({
+      where: {
+        id: result.category,
+        isDelete: false,
+      },
+    });
     return {
       ...result,
+      category: {
+        ...category,
+      },
     };
   }
 
   // 删除todo
   async deleteTodo(id: number) {
     const todo = await this.todoRepository.findOne({
-      where:{
-        id: id
-      }
-    })
-    if(!todo) {
-      throw new HttpException('todo不存在',404);
+      where: {
+        id: id,
+        isDelete: false,
+      },
+    });
+    if (!todo) {
+      throw new HttpException('todo不存在', 404);
     }
     todo.isDelete = true;
-    await this.todoRepository.save(todo)
-    return '删除成功'
+    await this.todoRepository.save(todo);
+    return '删除成功';
   }
 
   // 根据状态查找todo列表
@@ -75,10 +99,19 @@ export class TodoService {
     const todoList = await this.todoRepository.find({
       where: {
         status: status,
-        isDelete: false
+        isDelete: false,
       },
-      select: ['id', 'content', 'status', 'createTime', 'updateTime'],
+      select: [
+        'id',
+        'content',
+        'status',
+        'category',
+        'createTime',
+        'updateTime',
+      ],
+      relations: ['category']
     });
+    console.log(todoList[0]);
     return todoList;
   }
 }

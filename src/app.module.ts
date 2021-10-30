@@ -3,7 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
-import { TodoModule } from './modules/todo/todo.module';
+import { TodoModule } from './modules/todos/todos.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -15,7 +16,7 @@ import { TodoModule } from './modules/todo/todo.module';
     database: 'todo',
     autoLoadEntities: true,
     synchronize: true
-  }),UsersModule, TodoModule],
+  }),UsersModule, TodoModule, CategoriesModule],
   controllers: [AppController],
   providers: [AppService],
 })

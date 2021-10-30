@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Category } from 'src/modules/categories/entity/category.entity';
 
 export class TodoInfoVo {
   @ApiProperty({
@@ -19,6 +20,12 @@ export class TodoInfoVo {
     type: Number,
   })
   status: number;
+
+  @ApiProperty({
+    description: 'todo的分类',
+    type: Category,
+  })
+  category: Category;
 
   @ApiProperty({
     description: 'todo创建时间',

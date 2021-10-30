@@ -19,7 +19,7 @@ import { IdDto } from 'src/common/dto/id.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { EditTodoDto } from './dto/edit-todo.dto';
 import { StatusDto } from './dto/status.dto';
-import { TodoService } from './todo.service';
+import { TodoService } from './todos.service';
 import { CreateTodoVo } from './vo/create-todo.vo';
 import { DeleteTodoVo } from './vo/delete-todo.vo';
 import { EditTodoVo } from './vo/edit-todo.vo';
