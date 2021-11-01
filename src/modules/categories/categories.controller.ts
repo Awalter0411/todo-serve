@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthUser } from '../users/decorators/user.decorator';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryListVo } from './vo/category-list.vo';
@@ -21,6 +24,7 @@ export class CategoriesController {
    * @param createCategoryDto 创建的分类
    * @returns 创建的分类
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '创建分类',
   })
@@ -32,15 +36,17 @@ export class CategoriesController {
     description: '创建的分类信息',
     type: CreateCategoryVo,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
-    return await this.categoryService.createCategory(createCategoryDto);
+  async createCategory(@Body() createCategoryDto: CreateCategoryDto, @AuthUser('id') userId: number) {
+    return await this.categoryService.createCategory(createCategoryDto, userId);
   }
 
   /**
    * 获取所有分类
    * @returns 所有分类
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '获取所有分类',
 
@@ -48,9 +54,10 @@ export class CategoriesController {
   @ApiOkResponse({
     type: CategoryListVo,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Get('list')
-  async getCategoryList() {
-    return await this.categoryService.getCategoryList();
+  async getCategoryList(@AuthUser('id') userId: number) {
+    return await this.categoryService.getCategoryList(userId);
   }
 
   /**
@@ -58,14 +65,16 @@ export class CategoriesController {
    * @param id 分类id
    * @returns boolean
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '根据id删除分类',
   })
   @ApiOkResponse({
     type: DeleteCategoryVo,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Delete('delete/:id')
-  async deleteCategory(@Param('id') id: number) {
-    return this.categoryService.deleteCategory(id);
+  async deleteCategory(@Param('id') id: number, @AuthUser('id') userId: number) {
+    return this.categoryService.deleteCategory(id, userId);
   }
 }

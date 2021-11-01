@@ -1,5 +1,6 @@
 import { Common } from 'src/common/entity/common.entity';
 import { Category } from 'src/modules/categories/entity/category.entity';
+import { User } from 'src/modules/users/entity/user.entity';
 import {
   Column, 
   Entity,
@@ -24,4 +25,7 @@ export class Todo extends Common{
 
   @ManyToOne(() => Category, category => category.todos)
   category: number
+
+  @ManyToOne(() => User ,user => user.todos)
+  user: number
 }

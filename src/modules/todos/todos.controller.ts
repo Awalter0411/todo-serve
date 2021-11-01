@@ -6,8 +6,11 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -16,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { IdDto } from 'src/common/dto/id.dto';
+import { AuthUser } from '../users/decorators/user.decorator';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { EditTodoDto } from './dto/edit-todo.dto';
 import { StatusDto } from './dto/status.dto';
@@ -36,6 +40,7 @@ export class TodoController {
    * @param createTodoDto 创建的todo
    * @returns 创建的todo
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '创建todo',
   })
@@ -46,9 +51,10 @@ export class TodoController {
     description: '创建todo',
     type: CreateTodoVo,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  async createTodo(@Body() createTodoDto: CreateTodoDto) {
-    return await this.todoService.createTodo(createTodoDto);
+  async createTodo(@Body() createTodoDto: CreateTodoDto, @AuthUser("id") userId: number) {
+    return await this.todoService.createTodo(createTodoDto,userId);
   }
 
   /**
@@ -56,6 +62,7 @@ export class TodoController {
    * @param editTodoDto 编辑的todo
    * @returns 编辑的todo
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '编辑todo',
   })
@@ -66,9 +73,10 @@ export class TodoController {
     description: '编辑的todo',
     type: EditTodoVo,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Post('edit')
-  async editTodo(@Body() editTodoDto: EditTodoDto) {
-    return await this.todoService.editTodo(editTodoDto);
+  async editTodo(@Body() editTodoDto: EditTodoDto, @AuthUser('id') userId: number) {
+    return await this.todoService.editTodo(editTodoDto, userId);
   }
 
   /**
@@ -76,6 +84,7 @@ export class TodoController {
    * @param id 删除todo的id
    * @returns boolean
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '删除todo',
   })
@@ -87,8 +96,9 @@ export class TodoController {
     type: DeleteTodoVo,
   })
   @Delete('delete/:id')
-  async deleteTodo(@Param('id') id: number) {
-    return await this.todoService.deleteTodo(id);
+  @UseGuards(AuthGuard('jwt'))
+  async deleteTodo(@Param('id') id: number, @AuthUser('id') userId: number) {
+    return await this.todoService.deleteTodo(id, userId);
   }
 
   /**
@@ -96,6 +106,7 @@ export class TodoController {
    * @param statusDto todo的状态
    * @returns todo列表
    */
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '根据状态查找todo',
   })
@@ -107,8 +118,9 @@ export class TodoController {
     description: '该状态的todo列表',
     type: TodoListByStatusVo,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Get('/list/status')
-  async getTodoListByStatus(@Query() statusDto: StatusDto) {
-    return await this.todoService.getTodoListByStatus(statusDto);
+  async getTodoListByStatus(@Query() statusDto: StatusDto, @AuthUser('id') userId: number) {
+    return await this.todoService.getTodoListByStatus(statusDto, userId);
   }
 }

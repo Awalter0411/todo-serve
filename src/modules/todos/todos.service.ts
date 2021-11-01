@@ -17,7 +17,7 @@ export class TodoService {
   ) {}
 
   // 创建一个todo
-  async createTodo(createTodoDto: CreateTodoDto) {
+  async createTodo(createTodoDto: CreateTodoDto, userId: number) {
     const todo = new Todo();
     const hasCategory = await this.categoryRepository.findOne({
       where: {
@@ -31,6 +31,7 @@ export class TodoService {
     todo.content = createTodoDto.content;
     todo.status = createTodoDto.status;
     todo.category = createTodoDto.categoryId;
+    todo.user = userId;
     const result = await this.todoRepository.save(todo);
 
     const { id, content, status, createTime, updateTime } = result;
@@ -45,12 +46,13 @@ export class TodoService {
   }
 
   // 编辑todo
-  async editTodo(editTodoDto: EditTodoDto) {
+  async editTodo(editTodoDto: EditTodoDto, userId: number) {
     const { id } = editTodoDto;
     const todo = await this.todoRepository.findOne({
       where: {
         id: id,
         isDelete: false,
+        user: userId,
       },
     });
     if (!todo) {
@@ -62,12 +64,20 @@ export class TodoService {
     const result = await this.todoRepository.save(todo);
     const category = await this.categoryRepository.findOne({
       where: {
-        id: result.category,
+        id: editTodoDto.categoryId,
         isDelete: false,
+        user: userId,
       },
     });
+    if (!category) {
+      throw new HttpException('分类不存在', 404);
+    }
     return {
-      ...result,
+      id: result.id,
+      createTime: result.createTime,
+      updateTime: result.updateTime,
+      content: result.content,
+      status: result.status,
       category: {
         ...category,
       },
@@ -75,11 +85,12 @@ export class TodoService {
   }
 
   // 删除todo
-  async deleteTodo(id: number) {
+  async deleteTodo(id: number, userId: number) {
     const todo = await this.todoRepository.findOne({
       where: {
         id: id,
         isDelete: false,
+        user: userId,
       },
     });
     if (!todo) {
@@ -91,7 +102,7 @@ export class TodoService {
   }
 
   // 根据状态查找todo列表
-  async getTodoListByStatus(statusDto: StatusDto) {
+  async getTodoListByStatus(statusDto: StatusDto, userId: number) {
     const { status } = statusDto;
     if (!isNumber(status)) {
       throw new HttpException('传入的状态有误', 404);
@@ -100,6 +111,7 @@ export class TodoService {
       where: {
         status: status,
         isDelete: false,
+        user: userId,
       },
       select: [
         'id',
@@ -109,7 +121,7 @@ export class TodoService {
         'createTime',
         'updateTime',
       ],
-      relations: ['category']
+      relations: ['category'],
     });
     console.log(todoList[0]);
     return todoList;

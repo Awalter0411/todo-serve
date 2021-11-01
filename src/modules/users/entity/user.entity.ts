@@ -1,8 +1,11 @@
 import { Common } from 'src/common/entity/common.entity';
+import { Category } from 'src/modules/categories/entity/category.entity';
+import { Todo } from 'src/modules/todos/entity/todo.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,
@@ -36,4 +39,10 @@ export class User{
     default: false
   })
   isDelete: boolean;
+
+  @OneToMany(() => Todo, todo => todo.user)
+  todos: Todo[]
+
+  @OneToMany(() => Category, category => category.user) 
+  categories: Category[]
 }

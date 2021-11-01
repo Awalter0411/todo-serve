@@ -41,7 +41,11 @@ export class UsersService {
     }
     newUser.password = hashPassword;
     newUser.salt = salt;
-    return await this.userRepository.save(newUser);
+    const result = await this.userRepository.save(newUser);
+    return {
+      id: result.id,
+      username: result.username
+    }
   }
 
   // 用户登录

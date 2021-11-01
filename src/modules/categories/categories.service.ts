@@ -15,12 +15,13 @@ export class CategoriesService {
   ) {}
 
   // 创建分类
-  async createCategory(createCategoryDto: CreateCategoryDto) {
+  async createCategory(createCategoryDto: CreateCategoryDto, userId: number) {
     const { name } = createCategoryDto;
     const hasCategory = await this.categoryRepository.findOne({
       where: {
         name: name,
         isDelete: false,
+        user: userId,
       },
     });
     if (hasCategory) {
@@ -28,6 +29,7 @@ export class CategoriesService {
     }
     const newCategory = new Category();
     newCategory.name = name;
+    newCategory.user = userId;
     const result = await this.categoryRepository.save(newCategory);
     const { id, createTime, updateTime } = result;
     return {
@@ -39,21 +41,23 @@ export class CategoriesService {
   }
 
   // 获取所有分类
-  async getCategoryList() {
+  async getCategoryList(userId: number) {
     return await this.categoryRepository.find({
       select: ['id', 'name', 'createTime', 'updateTime'],
       where: {
         isDelete: false,
+        user: userId,
       },
     });
   }
 
   // 根据id删除分类
-  async deleteCategory(id: number) {
+  async deleteCategory(id: number, userId: number) {
     const category = await this.categoryRepository.findOne({
       where: {
         id: id,
         isDelete: false,
+        user: userId
       },
     });
     if (!category) {
