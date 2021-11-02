@@ -57,15 +57,28 @@ export class CategoriesService {
       where: {
         id: id,
         isDelete: false,
-        user: userId
+        user: userId,
       },
     });
     if (!category) {
       throw new HttpException('todo不存在', 404);
     }
-
+    // 找到属于此分类的todo列表
+    const todoList = await this.todoRepository.find({
+      where: {
+        isDelete: false,
+        user: userId,
+        category,
+      },
+    });
+    // 删除此分类下的所有todo
+    for (let i = 0; i < todoList.length; i++) {
+      todoList[i].isDelete = true;
+      console.log(todoList[i])
+      await this.todoRepository.save(todoList[i])
+    }
     category.isDelete = true;
     await this.categoryRepository.save(category);
-    return '删除成功';
+    return;
   }
 }

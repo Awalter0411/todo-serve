@@ -29,14 +29,15 @@ export class TodoService {
       throw new HttpException('分类不存在', 404);
     }
     for (let key in createTodoDto) {
-      if (key !== 'id') {
+      if (key !== 'id' && key !== 'categoryId') {
         todo[key] = createTodoDto[key];
       }
     }
+    todo.category = createTodoDto.categoryId;
     todo.user = userId;
     const result = await this.todoRepository.save(todo);
 
-    const { id, content, status, createTime, updateTime,isFinished } = result;
+    const { id, content, status, createTime, updateTime, isFinished } = result;
     return {
       id,
       content,
@@ -62,8 +63,11 @@ export class TodoService {
       throw new HttpException('todo不存在', 400);
     }
     for (let key in editTodoDto) {
-      if (key !== 'id') todo[key] = editTodoDto[key];
+      if (key !== 'id' && key !== 'categoryId') {
+        todo[key] = editTodoDto[key];
+      }
     }
+    todo.category = editTodoDto.categoryId;
     const result = await this.todoRepository.save(todo);
     const category = await this.categoryRepository.findOne({
       where: {

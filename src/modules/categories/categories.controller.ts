@@ -61,13 +61,13 @@ export class CategoriesController {
   }
 
   /**
-   * 根据id删除分类
+   * 删除分类
    * @param id 分类id
    * @returns boolean
    */
   @ApiBearerAuth()
   @ApiOperation({
-    summary: '根据id删除分类',
+    summary: '删除分类',
   })
   @ApiOkResponse({
     type: DeleteCategoryVo,
