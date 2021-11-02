@@ -37,4 +37,10 @@ export class RegisterDto {
     message: '再次输入的密码不能为空',
   })
   passwordRepeat: string;
+
+  @ApiProperty({
+    description: '角色',
+    type: Number,
+  })
+  role: string;
 }

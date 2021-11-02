@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -19,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { IdDto } from 'src/common/dto/id.dto';
+import { RolesGuard } from 'src/common/guards/role.guard';
 import { AuthUser } from '../users/decorators/user.decorator';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { EditTodoDto } from './dto/edit-todo.dto';
@@ -29,7 +31,11 @@ import { DeleteTodoVo } from './vo/delete-todo.vo';
 import { EditTodoVo } from './vo/edit-todo.vo';
 import { TodoInfoVo } from './vo/todo-info.vo';
 import { TodoListByStatusVo } from './vo/todo-list.vo';
+import { roleConstants as role } from 'src/config/constants';
+import { RoleInterceptor } from 'src/common/interceptors/role.interceptors';
 
+
+@ApiBearerAuth()
 @ApiTags('todo模块')
 @Controller('todo')
 export class TodoController {
@@ -40,7 +46,6 @@ export class TodoController {
    * @param createTodoDto 创建的todo
    * @returns 创建的todo
    */
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '创建todo',
   })
@@ -51,6 +56,8 @@ export class TodoController {
     description: '创建todo',
     type: CreateTodoVo,
   })
+  // 权限设置
+  @UseGuards(new RolesGuard(role.HUMAN))
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
   async createTodo(@Body() createTodoDto: CreateTodoDto, @AuthUser("id") userId: number) {
@@ -62,7 +69,6 @@ export class TodoController {
    * @param editTodoDto 编辑的todo
    * @returns 编辑的todo
    */
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '编辑todo',
   })
@@ -84,7 +90,6 @@ export class TodoController {
    * @param id 删除todo的id
    * @returns boolean
    */
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '删除todo',
   })
@@ -106,7 +111,6 @@ export class TodoController {
    * @param statusDto todo的状态
    * @returns todo列表
    */
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '根据状态查找todo',
   })

@@ -44,7 +44,8 @@ export class UsersService {
     const result = await this.userRepository.save(newUser);
     return {
       id: result.id,
-      username: result.username
+      username: result.username,
+      role: result.role
     }
   }
 
@@ -65,13 +66,13 @@ export class UsersService {
     if (hashPassword !== user.password) {
       throw new HttpException('用户名或密码不正确', 404);
     }
-
     // 生成token
-    const token = this.jwtService.sign({
+    const payload = {
       id: user.id,
-      username: username,
-    });
-
+      username: user.username,
+      role: user.role,
+    }
+    const token = this.jwtService.sign(payload);
     return {
       token,
     };

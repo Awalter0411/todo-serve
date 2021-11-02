@@ -5,13 +5,14 @@ import { User } from './entity/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { jwtConstants } from 'src/config/constants';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     // jwt注册
     JwtModule.register({
-      secret: 'dasdsadasddeqwe',
+      secret: jwtConstants.secret,
       signOptions: {
         expiresIn: '24h',
       },

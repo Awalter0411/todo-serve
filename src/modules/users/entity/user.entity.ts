@@ -40,6 +40,12 @@ export class User{
   })
   isDelete: boolean;
 
+  @Column({
+    default: 3
+  })
+  // role[用户角色]: 0-超级管理员 | 1-管理员 | 2-开发&测试&运营 | 3-普通用户（只能查看）
+  role: number;
+
   @OneToMany(() => Todo, todo => todo.user)
   todos: Todo[]
 
