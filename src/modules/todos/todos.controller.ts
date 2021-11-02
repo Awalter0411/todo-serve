@@ -32,8 +32,6 @@ import { EditTodoVo } from './vo/edit-todo.vo';
 import { TodoInfoVo } from './vo/todo-info.vo';
 import { TodoListByStatusVo } from './vo/todo-list.vo';
 import { roleConstants as role } from 'src/config/constants';
-import { RoleInterceptor } from 'src/common/interceptors/role.interceptors';
-
 
 @ApiBearerAuth()
 @ApiTags('todo模块')
@@ -60,8 +58,11 @@ export class TodoController {
   @UseGuards(new RolesGuard(role.HUMAN))
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  async createTodo(@Body() createTodoDto: CreateTodoDto, @AuthUser("id") userId: number) {
-    return await this.todoService.createTodo(createTodoDto,userId);
+  async createTodo(
+    @Body() createTodoDto: CreateTodoDto,
+    @AuthUser('id') userId: number,
+  ) {
+    return await this.todoService.createTodo(createTodoDto, userId);
   }
 
   /**
@@ -81,7 +82,10 @@ export class TodoController {
   })
   @UseGuards(AuthGuard('jwt'))
   @Post('edit')
-  async editTodo(@Body() editTodoDto: EditTodoDto, @AuthUser('id') userId: number) {
+  async editTodo(
+    @Body() editTodoDto: EditTodoDto,
+    @AuthUser('id') userId: number,
+  ) {
     return await this.todoService.editTodo(editTodoDto, userId);
   }
 
@@ -124,7 +128,10 @@ export class TodoController {
   })
   @UseGuards(AuthGuard('jwt'))
   @Get('/list/status')
-  async getTodoListByStatus(@Query() statusDto: StatusDto, @AuthUser('id') userId: number) {
+  async getTodoListByStatus(
+    @Query() statusDto: StatusDto,
+    @AuthUser('id') userId: number,
+  ) {
     return await this.todoService.getTodoListByStatus(statusDto, userId);
   }
 }

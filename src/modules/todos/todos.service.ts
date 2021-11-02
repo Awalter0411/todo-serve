@@ -28,13 +28,15 @@ export class TodoService {
     if (!hasCategory) {
       throw new HttpException('分类不存在', 404);
     }
-    todo.content = createTodoDto.content;
-    todo.status = createTodoDto.status;
-    todo.category = createTodoDto.categoryId;
+    for (let key in createTodoDto) {
+      if (key !== 'id') {
+        todo[key] = createTodoDto[key];
+      }
+    }
     todo.user = userId;
     const result = await this.todoRepository.save(todo);
 
-    const { id, content, status, createTime, updateTime } = result;
+    const { id, content, status, createTime, updateTime,isFinished } = result;
     return {
       id,
       content,
@@ -42,6 +44,7 @@ export class TodoService {
       category: hasCategory,
       createTime,
       updateTime,
+      isFinished,
     };
   }
 
@@ -74,6 +77,9 @@ export class TodoService {
     }
     return {
       id: result.id,
+      startTime: result.startTime,
+      endTime: result.endTime,
+      isFinished: result.isFinished,
       createTime: result.createTime,
       updateTime: result.updateTime,
       content: result.content,
@@ -98,7 +104,7 @@ export class TodoService {
     }
     todo.isDelete = true;
     await this.todoRepository.save(todo);
-    return '删除成功';
+    return;
   }
 
   // 根据状态查找todo列表
@@ -118,12 +124,14 @@ export class TodoService {
         'content',
         'status',
         'category',
+        'startTime',
+        'endTime',
+        'isFinished',
         'createTime',
         'updateTime',
       ],
       relations: ['category'],
     });
-    console.log(todoList[0]);
     return todoList;
   }
 }

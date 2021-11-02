@@ -26,4 +26,24 @@ export class EditTodoDto{
     type: Number
   })
   categoryId: number;
+
+  @ApiProperty({
+    description: 'todo的开始时间',
+    type: Date,
+    example: '2021-11-11'
+  })
+  startTime: Date;
+
+  @ApiProperty({
+    description: 'todo的结束时间',
+    type:Date,
+    example: '2021-11-11'
+  })
+  endTime: Date;
+
+  @ApiProperty({
+    description: 'todo是否完成'
+  })
+  isFinished: boolean;
+
 }

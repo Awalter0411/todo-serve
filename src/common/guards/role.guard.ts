@@ -15,7 +15,6 @@ export class RolesGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    console.log(user.role)
     if (user.role > this.role) {
       throw new ForbiddenException('对不起，您无权操作');
     }

@@ -28,6 +28,18 @@ export class TodoInfoVo {
   category: Category;
 
   @ApiProperty({
+    description: 'todo的开始时间',
+    type: Date,
+  })
+  startTime: Date;
+
+  @ApiProperty({
+    description: 'todo的结束时间',
+    type: Date
+  })
+  endTime: Date;
+
+  @ApiProperty({
     description: 'todo创建时间',
     type: Date,
   })
@@ -38,4 +50,10 @@ export class TodoInfoVo {
     type: Date,
   })
   updateTime: Date;
+
+  @ApiProperty({
+    description: 'todo是否完成',
+    type: Boolean
+  })
+  isFinished: boolean;
 }

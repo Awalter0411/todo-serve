@@ -8,7 +8,6 @@ export class RoleInterceptor implements NestInterceptor {
   constructor(private readonly role: number) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.getArgByIndex(1).req;
-    console.log(req.user)
     if (req.user.role > this.role) {
       throw new ForbiddenException('对不起，您无权操作');
     }
