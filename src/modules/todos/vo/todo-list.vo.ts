@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { TodoInfoVo } from "./todo-info.vo";
+import { ApiProperty } from '@nestjs/swagger';
+import { TodoInfoVo } from './todo-info.vo';
 
 export class TodoListByStatusVo {
   @ApiProperty({
@@ -7,5 +7,7 @@ export class TodoListByStatusVo {
     type: TodoInfoVo,
     isArray: true,
   })
-  data: Array<TodoInfoVo>
+  data: Array<TodoInfoVo>;
 }
+
+export class TodoListByCategoryVo extends TodoListByStatusVo {}

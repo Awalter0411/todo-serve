@@ -9,8 +9,8 @@ const localconfig = {
 const productConfig = {
   port: 3306,
   host: 'localhost',
-  username: 'root',
-  password: 'lyxa1105',
+  username: 'todo',
+  password: 'Lyxa1105.',
   database: 'todo',
 }
 

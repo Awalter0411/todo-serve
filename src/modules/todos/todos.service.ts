@@ -138,4 +138,36 @@ export class TodoService {
     });
     return todoList;
   }
+
+  // 根据分类查找todo列表
+  async getTodoListByCategory(categoryId: number, userId: number) {
+    const hasCategory = await this.categoryRepository.findOne({
+      where: {
+        id: categoryId,
+      },
+    });
+    if (!hasCategory) {
+      throw new HttpException('不存在此分类', 404);
+    }
+    const todoList = await this.todoRepository.find({
+      where: {
+        isDelete: false,
+        user: userId,
+        category: categoryId,
+      },
+      select: [
+        'id',
+        'content',
+        'status',
+        'category',
+        'startTime',
+        'endTime',
+        'isFinished',
+        'createTime',
+        'updateTime',
+      ],
+      relations: ['category'],
+    });
+    return todoList;
+  }
 }

@@ -30,7 +30,7 @@ import { CreateTodoVo } from './vo/create-todo.vo';
 import { DeleteTodoVo } from './vo/delete-todo.vo';
 import { EditTodoVo } from './vo/edit-todo.vo';
 import { TodoInfoVo } from './vo/todo-info.vo';
-import { TodoListByStatusVo } from './vo/todo-list.vo';
+import { TodoListByCategoryVo, TodoListByStatusVo } from './vo/todo-list.vo';
 import { roleConstants as role } from 'src/config/constants';
 
 @ApiBearerAuth()
@@ -133,5 +133,22 @@ export class TodoController {
     @AuthUser('id') userId: number,
   ) {
     return await this.todoService.getTodoListByStatus(statusDto, userId);
+  }
+
+  @ApiOperation({
+    summary: '根据分类查找todo'
+  })
+  @ApiParam({
+    name:'categoryId',
+    description: '分类的id'
+  })
+  @ApiOkResponse({
+    description: '该分类的todo列表',
+    type: TodoListByCategoryVo
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('category/:categoryId')
+  async getTodoListByCategory(@Param('categoryId') categoryId: number,@AuthUser('id') userId: number){
+    return await this.todoService.getTodoListByCategory(categoryId, userId);
   }
 }
