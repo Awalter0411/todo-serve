@@ -5,7 +5,7 @@ import { map, Observable } from 'rxjs';
 export class TransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(map(data => ({
-      code: 200,
+      statusCode: 200,
       data,
       message: '操作成功'
     })))
